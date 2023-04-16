@@ -7,9 +7,10 @@ import FirebaseContext from "../context/firebase";
 function Dashboard() {
   const { firebase } = useContext(FirebaseContext);
   const history = useHistory();
+  const user = firebase.auth().currentUser;
   return (
     <div>
-      Dashboard
+      <h1>Welcome {user.displayName}</h1>
       <div>
         <button
           className="bg-blue-medium text-white p-2 px-4 mt-5 font-semibold"
