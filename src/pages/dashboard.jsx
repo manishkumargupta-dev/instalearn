@@ -1,37 +1,30 @@
-import React from "react";
-import { useContext } from "react";
-import * as ROUTES from "../constants/routes";
-import { useHistory } from "react-router-dom";
-import FirebaseContext from "../context/firebase";
+import { useEffect } from "react";
+import PropTypes from "prop-types";
+import Header from "../components/header";
+import Timeline from "../components/timeline";
+import Sidebar from "../components/sidebar";
+import useUser from "../hooks/use-user";
+import LoggedInUserContext from "../context/logged-in-user";
 
-function Dashboard() {
-  const { firebase } = useContext(FirebaseContext);
-  const history = useHistory();
-  const user = firebase.auth().currentUser;
+export default function Dashboard({ user: loggedInUser }) {
+  const { user, setActiveUser } = useUser(loggedInUser.uid);
+  useEffect(() => {
+    document.title = "Instagram";
+  }, []);
+
   return (
-    <div>
-      <h1>Welcome {user.displayName}</h1>
-      <div>
-        <button
-          className="bg-blue-medium text-white p-2 px-4 mt-5 font-semibold"
-          type="button"
-          title="Sign Out"
-          onClick={() => {
-            firebase.auth().signOut();
-            history.push(ROUTES.LOGIN);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              firebase.auth().signOut();
-              history.push(ROUTES.LOGIN);
-            }
-          }}
-        >
-          Sign out
-        </button>
+    <LoggedInUserContext.Provider value={{ user, setActiveUser }}>
+      <div className="bg-gray-background">
+        <Header />
+        <div className="grid grid-cols-3 gap-4 justify-between mx-auto max-w-screen-lg">
+          <Timeline />
+          <Sidebar />
+        </div>
       </div>
-    </div>
+    </LoggedInUserContext.Provider>
   );
 }
 
-export default Dashboard;
+Dashboard.propTypes = {
+  user: PropTypes.object.isRequired,
+};
